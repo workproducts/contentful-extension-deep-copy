@@ -1,5 +1,6 @@
 import { init as initContentfulExtension } from 'contentful-ui-extensions-sdk'
-import { recursiveClone } from './deep-copy2'
+// import { recursiveClone } from './deep-copy2'
+import { recursiveClone } from './deep-copy-partner-portal'
 
 let space = null
 let entry = null
@@ -22,6 +23,7 @@ function addToLog (str) {
   logWindow.innerHTML += `<p>${str}</p>`
   logWindow.scrollTo(0, 999999999)
 }
+
 window.addEventListener('deepcopylog', (event) => {
   addToLog(event.detail.log)
 })
@@ -41,10 +43,15 @@ window.doTheDeepCopy = async function() {
 
   const sys = entry.getSys()
   const clonedEntry = await recursiveClone(space, sys.id, tag)
-  addToLog('')
-  addToLog('<strong>Clone successful!<strong>')
-  addToLog('New entry at:')
-  addToLog(`<a target="_top" href="https://app.contentful.com/spaces/${sys.space.sys.id}/entries/${clonedEntry.sys.id}">https://app.contentful.com/spaces/${sys.space.sys.id}/entries/${sys.id}</a>`)
+
+  if (clonedEntry) {
+    addToLog('<strong>Clone successful!<strong>')
+    addToLog('New entry at:')
+    addToLog(`<a target="_top" href="https://app.contentful.com/spaces/${sys.space.sys.id}/entries/${clonedEntry.sys.id}">https://app.contentful.com/spaces/${sys.space.sys.id}/entries/${sys.id}</a>`)
+
+  } else {
+    addToLog('Dry run complete. Check the console for details.');
+  }
 
   activationButton.classList.remove('cf-is-loading')
 }
