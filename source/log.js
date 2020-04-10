@@ -8,7 +8,7 @@ function log (str) {
     window.dispatchEvent(ce)
   }
   if (console) {
-    console.log('DeepCopy: ' + str)
+    console.log(str)
   }
 }
 

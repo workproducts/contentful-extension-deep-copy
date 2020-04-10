@@ -29,7 +29,7 @@ async function createEntry (type, data) {
   await wait(waitTime);
 
   if (!dryRun) {
-  return await space.createEntry(type, data)
+    return await space.createEntry(type, data)
   }
 }
 
@@ -58,7 +58,6 @@ async function findReferences (entryId) {
   const entry = await getEntry(entryId)
 
   referenceCount++
-
   references[entryId] = entry
 
   for (let fieldName in entry.fields) {
@@ -72,23 +71,25 @@ async function findReferences (entryId) {
   }
 }
 
-async function createNewEntriesFromReferences (tag) {
-  // temporarily override tag
-  tag = 'deleteme';
+async function createNewEntriesFromReferences (title) {
+  if (!title) {
+    title = 'New Toolkit';
+  }
 
   const newEntries = {};
 
   for (let entryId in references) {
     const entry = references[entryId];
     const fields = entry.fields;
-    // let newEntry;
+    const type = entry.sys.contentType.sys.id;
+    let info = '';
+    let skipCopy = false;
 
-    // if (fields.title && fields.title[region]) fields.title[region] = fields.title[region] + ' ' + tag;
-    console.log('----- '+ entry.sys.contentType.sys.id +' -----');
+    console.log('----- '+ type +' -----');
 
-    switch (entry.sys.contentType.sys.id) {
+    switch (type) {
       case 'toolkit':
-        fields.title[region] = 'New toolkit ['+ tag +']';
+        fields.title[region] = title;
         fields.description[region] = 'Description';
         fields.synopsis[region] = 'Synopsis';
         delete fields.slug;
@@ -96,15 +97,17 @@ async function createNewEntriesFromReferences (tag) {
         delete fields.titleArt;
         delete fields.launchDate;
         delete fields.distribution;
+
+        info = fields.title[region];
       break;
 
       case 'toolkitAsset':
-        console.log(fields.name[region]);
+        info = fields.name[region];
         delete fields.ctaUrl;
       break;
 
       case 'contentModule':
-        console.log(fields.contentType[region]);
+        info = fields.contentType[region];
         
         // text
         delete fields.ctaUrl
@@ -118,30 +121,35 @@ async function createNewEntriesFromReferences (tag) {
         delete fields.twoColumnList1;
         delete fields.twoColumnList2;
 
-        // // subheader
-        // delete fields.;
-
-        // // toolkit asset - social
-        // delete fields.;
-
         // video
         delete fields.video;
-
       break;
 
       case 'imageMetadata':
-        console.log(fields.name[region]);
+        info = fields.name[region];
+      break;
+
+      case 'tagRegion':
+      case 'tagLanguage':
+      case 'tagCreativeType':
+        info = fields.name[region];
+        skipCopy = true;
       break;
 
       default:
-        console.log('unrecognized type '+ entry.sys.contentType.sys.id);
+        log(`Unrecognized type ${type}`);
       break;
     }
 
-    console.log(fields);
-    const newEntry = await createEntry(entry.sys.contentType.sys.id, { fields: fields })
-    newReferenceCount++
-    newEntries[entryId] = newEntry
+    if (!skipCopy) {
+      const newEntry = await createEntry(entry.sys.contentType.sys.id, { fields: fields })
+      newReferenceCount++
+      newEntries[entryId] = newEntry
+      log(`New ${type}: ${info}`);
+
+    } else {
+      log(`Link: ${type}`);
+    }
   }
   
   return newEntries
@@ -157,7 +165,11 @@ async function updateReferencesOnField(field, newReferences) {
   if (field && field.sys && field.sys.type === 'Link' && field.sys.linkType === 'Entry') {
     const oldReference = references[field.sys.id]
     const newReference = newReferences[field.sys.id]
-    field.sys.id = newReference.sys.id
+
+    // in some cases items will remain as links, so a newReference won't exist for it
+    if (newReference) {
+      field.sys.id = newReference.sys.id
+    }
   }
 }
 
@@ -181,7 +193,7 @@ async function updateReferenceTree(newReferences) {
   }
 }
 
-async function recursiveClone (spaceObj, entryId, tag) {
+async function recursiveClone (spaceObj, entryId, title) {
   space = spaceObj;
   references = {}
   referenceCount = 0
@@ -207,7 +219,7 @@ async function recursiveClone (spaceObj, entryId, tag) {
     log(` - created ${newReferenceCount}/${referenceCount} - ${Math.round((newReferenceCount / referenceCount) * 100)}%`)
   }, statusUpdateTimeout)
 
-  const newReferences = await createNewEntriesFromReferences(tag)
+  const newReferences = await createNewEntriesFromReferences(title)
   clearInterval(statusUpdateTimer)
 
   log(` -- Created ${newReferenceCount} reference(s)`)

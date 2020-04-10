@@ -19,14 +19,13 @@
       font-family: "Courier New", Courier, monospace;
       padding: 4px 8px;
       display: none;
-
-      overflow: hidden;
-      overflow-y: auto;
+      overflow: auto;
     }
     .log-window p {
       margin: 0;
-      line-height: 20px;
-      min-height: 20px;
+      line-height: 14px;
+      font-size: 11px;
+      white-space: nowrap;
     }
     .content {
       margin-bottom: 24px;
@@ -58,12 +57,11 @@
 
     <div class="cf-form-field">
       <label>
-        <span>Tag</span>
-        <input type="text" value="" class="cf-form-input clone-tag">
+        <span>Title</span>
+        <input type="text" placeholder="New toolkit title" value="" class="cf-form-input clone-tag">
       </label>
       <div class="cf-form-hint">
-        This will be appended to the 'en-US' title-field of duplicated entries (if applicable).<br>
-        Leave empty for no tag.
+        This will be used as the title for the new entry. If left blank, &quot;New Toolkit&quot; will be used.
       </div>
     </div>
 

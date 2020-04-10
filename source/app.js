@@ -46,7 +46,7 @@ window.doTheDeepCopy = async function() {
 
   if (clonedEntry) {
     addToLog('<strong>Clone successful!<strong>')
-    addToLog('New entry at:')
+    addToLog('New entry at (right-click, open link in new tab):')
     addToLog(`<a target="_top" href="https://app.contentful.com/spaces/${sys.space.sys.id}/entries/${clonedEntry.sys.id}">https://app.contentful.com/spaces/${sys.space.sys.id}/entries/${sys.id}</a>`)
 
   } else {
@@ -56,7 +56,7 @@ window.doTheDeepCopy = async function() {
   activationButton.classList.remove('cf-is-loading')
 }
 
-document.querySelector('.clone-tag').value = `(${new Date().toUTCString()})`
+// document.querySelector('.clone-tag').value = `(${new Date().toUTCString()})`
 
 window.toggleConfirmModal = function (flag) {
   document.querySelector('.confirm').style.display = flag ? 'flex' : 'none'
