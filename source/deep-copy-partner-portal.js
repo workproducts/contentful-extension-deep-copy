@@ -142,6 +142,21 @@ async function createNewEntriesFromReferences (title) {
     }
 
     if (!skipCopy) {
+
+      // global cleanup for non-reference items
+      if (fields.sendForLocalization) {
+        console.log('delete fields.sendForLocalization');
+        delete fields.sendForLocalization;
+      }
+      if (fields.localizedVersion) {
+        console.log('delete fields.localizedVersion');
+        delete fields.localizedVersion;
+      }
+      if (fields.localizedDate) {
+        console.log('delete fields.localizedDate');
+        delete fields.localizedDate;
+      }
+
       const newEntry = await createEntry(entry.sys.contentType.sys.id, { fields: fields })
       newReferenceCount++
       newEntries[entryId] = newEntry
