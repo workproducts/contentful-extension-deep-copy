@@ -87,14 +87,15 @@ async function createNewEntriesFromReferences (title) {
 
     console.log('----- '+ type +' -----');
 
+    console.log(fields);
+
     switch (type) {
       case 'toolkit':
+        // exclude non en-US items
         fields.title = {[region]: title};
-        fields.description = {[region]: 'Description'};
-        fields.synopsis = {[region]: 'Synopsis'};
-        // fields.title[region] = title;
-        // fields.description[region] = 'Description';
-        // fields.synopsis[region] = 'Synopsis';
+        fields.description = {[region]: ''};
+        fields.synopsis = {[region]: ''};
+
         delete fields.slug;
         delete fields.category;
         delete fields.titleArt;
@@ -126,6 +127,12 @@ async function createNewEntriesFromReferences (title) {
 
         // video
         delete fields.video;
+
+        // exclude 'poster' if present
+        if (fields.poster) {
+          console.log('delete poster');
+          delete fields.poster;
+        }
       break;
 
       case 'imageMetadata':
@@ -148,15 +155,12 @@ async function createNewEntriesFromReferences (title) {
 
       // global cleanup for non-reference items
       if (fields.sendForLocalization) {
-        console.log('delete fields.sendForLocalization');
         delete fields.sendForLocalization;
       }
       if (fields.localizedVersion) {
-        console.log('delete fields.localizedVersion');
         delete fields.localizedVersion;
       }
       if (fields.localizedDate) {
-        console.log('delete fields.localizedDate');
         delete fields.localizedDate;
       }
 
