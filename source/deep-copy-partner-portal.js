@@ -89,9 +89,12 @@ async function createNewEntriesFromReferences (title) {
 
     switch (type) {
       case 'toolkit':
-        fields.title[region] = title;
-        fields.description[region] = 'Description';
-        fields.synopsis[region] = 'Synopsis';
+        fields.title = {[region]: title};
+        fields.description = {[region]: 'Description'};
+        fields.synopsis = {[region]: 'Synopsis'};
+        // fields.title[region] = title;
+        // fields.description[region] = 'Description';
+        // fields.synopsis[region] = 'Synopsis';
         delete fields.slug;
         delete fields.category;
         delete fields.titleArt;
