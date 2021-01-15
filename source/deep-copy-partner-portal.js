@@ -1,14 +1,14 @@
 import { log } from './log'
 
-let references = {}
-let referenceCount = 0
-let newReferenceCount = 0
-let updatedReferenceCount = 0
+let references = {};
+let referenceCount = 0;
+let newReferenceCount = 0;
+let updatedReferenceCount = 0;
 let region = 'en-US';
 let space = null;
 
-const statusUpdateTimeout = 3000
-const waitTime = 100
+const statusUpdateTimeout = 3000;
+const waitTime = 100;
 const dryRun = false;
 
 async function wait (ms) {
@@ -102,6 +102,11 @@ async function createNewEntriesFromReferences (title) {
         delete fields.launchDate;
         delete fields.distribution;
 
+        if (fields.tags) {
+          console.log('delete tags');
+          delete fields.tags;
+        }
+
         info = fields.title[region];
       break;
 
@@ -164,9 +169,9 @@ async function createNewEntriesFromReferences (title) {
         delete fields.localizedDate;
       }
 
-      const newEntry = await createEntry(entry.sys.contentType.sys.id, { fields: fields })
-      newReferenceCount++
-      newEntries[entryId] = newEntry
+      const newEntry = await createEntry(entry.sys.contentType.sys.id, { fields: fields });
+      newReferenceCount++;
+      newEntries[entryId] = newEntry;
       log(`New ${type}: ${info}`);
 
     } else {
